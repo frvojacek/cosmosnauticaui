@@ -19,6 +19,17 @@ namespace cosmonauticaui.Server.Services
 			_containerClient = _blobClient.GetBlobContainerClient("documents");
 		}
 
+		public async Task<List<BlobItem>> GetAll()
+		{
+			var items = new List<BlobItem>();
+			var blobs = _containerClient.GetBlobsAsync();
+			await foreach (var blob in blobs)
+			{
+				items.Add(blob);
+			}
+			return items;
+		}
+
 		public async Task<Response<BlobContentInfo>> UploadAsync(IFormFile file)
 		{
 			using (var stream = file.OpenReadStream())

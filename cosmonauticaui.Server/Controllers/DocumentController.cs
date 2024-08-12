@@ -14,6 +14,14 @@ namespace cosmonauticaui.Server.Controllers
 			_service = service;
 		}
 
+		[HttpGet]
+		public async Task<IActionResult> Get()
+		{
+			var files = await _service.GetAll();
+			var fileNames = files.Select(f => f.Name).ToList();
+			return Ok(fileNames);
+		}
+
 		[HttpPost]
 		[Consumes("multipart/form-data")]
 		public async Task<IActionResult> Post(IFormFile file)

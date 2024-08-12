@@ -1,7 +1,8 @@
+import { FormEvent } from "react";
 function App() {
     async function handleSubmit(event: FormEvent) {
         event.preventDefault();
-        const target = event.target as HTMLElement;
+        const target = event.target as HTMLFormElement;
         await fetch('https://localhost:32768/api/Document', {
             method: "POST",
             body: new FormData(target)

@@ -18,5 +18,13 @@ namespace cosmonauticaui.Server.Services
 			_blobClient = new(uri, new DefaultAzureCredential());
 			_containerClient = _blobClient.GetBlobContainerClient("documents");
 		}
+
+		public async Task<Response<BlobContentInfo>> UploadAsync(IFormFile file)
+		{
+			using (var stream = file.OpenReadStream())
+			{
+				return await _containerClient.UploadBlobAsync(file.FileName, stream);
+			}
+		}
 	}
 }

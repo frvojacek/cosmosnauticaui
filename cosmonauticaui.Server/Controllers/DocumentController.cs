@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using cosmonauticaui.Server.Services;
+using Microsoft.AspNetCore.Mvc;
 
 namespace cosmonauticaui.Server.Controllers
 {
@@ -6,11 +7,19 @@ namespace cosmonauticaui.Server.Controllers
 	[ApiController]
 	public class DocumentController : ControllerBase
 	{
+		AzureBlobService _service;
+
+		public DocumentController(AzureBlobService service)
+		{
+			_service = service;
+		}
+
 		[HttpPost]
 		[Consumes("multipart/form-data")]
-		public IActionResult Post(IFormFile file)
+		public async Task<IActionResult> Post(IFormFile file)
 		{
-			return Ok(file);
+			await _service.UploadAsync(file);
+			return Ok();
 		}
 	}
 }

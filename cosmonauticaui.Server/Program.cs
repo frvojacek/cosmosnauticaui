@@ -1,3 +1,5 @@
+using cosmonauticaui.Server.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add CORS policies
@@ -10,6 +12,7 @@ builder.Services.AddCors(options =>
 });
 // Add services to the container.
 builder.Services.AddControllers();
+builder.Services.AddSingleton<AzureBlobService>();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

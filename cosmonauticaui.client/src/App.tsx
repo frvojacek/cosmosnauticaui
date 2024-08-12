@@ -3,7 +3,8 @@ function App() {
     async function handleSubmit(event: FormEvent) {
         event.preventDefault();
         const target = event.target as HTMLFormElement;
-        await fetch('https://localhost:32768/api/Document', {
+        const domain = import.meta.env.PROD ? "" : "https://localhost:7075";
+        await fetch(domain + "/api/Document", {
             method: "POST",
             body: new FormData(target)
         });

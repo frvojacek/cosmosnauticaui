@@ -9,14 +9,14 @@ namespace cosmonauticaui.Server.Services
 	public class AzureBlobService
 	{
 		string _storageAccount = "cosmosnauticastorage";
-		BlobServiceClient _blobClient;
+		BlobServiceClient _serviceClient;
 		BlobContainerClient _containerClient;
 
 		public AzureBlobService()
 		{
 			var uri = new Uri($"https://{_storageAccount}.blob.core.windows.net");
-			_blobClient = new(uri, new DefaultAzureCredential());
-			_containerClient = _blobClient.GetBlobContainerClient("documents");
+			_serviceClient = new(uri, new DefaultAzureCredential());
+			_containerClient = _serviceClient.GetBlobContainerClient("documents");
 		}
 
 		public async Task<List<BlobItem>> GetAll()
@@ -28,6 +28,13 @@ namespace cosmonauticaui.Server.Services
 				items.Add(blob);
 			}
 			return items;
+		}
+
+		public async Task<Response<BlobDownloadResult>> DownloadAsync(string fileName)
+		{
+			var blobClient = _containerClient.GetBlobClient(fileName);
+			var content = await blobClient.DownloadContentAsync();
+			return content;
 		}
 
 		public async Task<Response<BlobContentInfo>> UploadAsync(IFormFile file)

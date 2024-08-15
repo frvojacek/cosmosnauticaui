@@ -10,9 +10,10 @@ builder.Services.AddCors(options =>
 		policy => policy.WithOrigins("https://localhost:5173")
 	);
 });
-// Add services to the container.
+// Add services to the container.c
 builder.Services.AddControllers();
 builder.Services.AddSingleton<AzureBlobService>();
+builder.Services.AddSingleton<CosmosDBService>();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

@@ -1,5 +1,7 @@
-﻿using cosmonauticaui.Server.Services;
+﻿using cosmonauticaui.Server.Models;
+using cosmonauticaui.Server.Services;
 using Microsoft.AspNetCore.Mvc;
+
 
 namespace cosmonauticaui.Server.Controllers
 {
@@ -8,10 +10,12 @@ namespace cosmonauticaui.Server.Controllers
 	public class DocumentController : ControllerBase
 	{
 		AzureBlobService _service;
+		CosmosDBService _dbService;
 
-		public DocumentController(AzureBlobService service)
+		public DocumentController(AzureBlobService service, CosmosDBService dbService)
 		{
 			_service = service;
+			_dbService = dbService;
 		}
 
 		[HttpGet]
@@ -35,6 +39,8 @@ namespace cosmonauticaui.Server.Controllers
 		public async Task<IActionResult> Post(IFormFile file)
 		{
 			await _service.UploadAsync(file);
+			await _dbService.UploadDocument(new Document("123", "SteveJobs.png"));
+
 			return Ok();
 		}
 	}

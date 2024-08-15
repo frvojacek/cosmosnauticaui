@@ -40,6 +40,7 @@ function App() {
             <form onSubmit={handleSubmit}>
                 <label htmlFor="file">File</label>
                 <input id="file" name="file" type="file" />
+                <input id="country" name="country" type="text" />
                 <button>Submit</button>
             </form>
             <table>

@@ -42,6 +42,10 @@ function App() {
                 <input id="name" name="name" />
                 <label htmlFor="file">File</label>
                 <input id="file" name="file" type="file" />
+                <input id="name" name="name" placeholder="Name" type="text" />
+                <input id="places" name="places" placeholder="Places" type="text" />
+                <input id="counterParties" name="counterParties" placeholder="Counter Parties" type="text" />
+                <input id="products" name="products" placeholder="Products" type="text" />
                 <button>Submit</button>
             </form>
             <table>

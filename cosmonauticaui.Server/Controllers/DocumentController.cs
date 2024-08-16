@@ -1,6 +1,7 @@
 ﻿using cosmonauticaui.Server.Models;
 using cosmonauticaui.Server.Services;
 using Microsoft.AspNetCore.Mvc;
+using System.Numerics;
 
 namespace cosmonauticaui.Server.Controllers
 {
@@ -36,21 +37,27 @@ namespace cosmonauticaui.Server.Controllers
 		[HttpPost]
 		public async Task<IActionResult> Post(IFormCollection form)
 		{
-			var id = Guid.NewGuid();
-			var name = form["name"];
-			var file = form.Files[0];
-			var fileName = Path.GetFileName(file.FileName);
+            var id = Guid.NewGuid();
+            var name = form["name"];
+			string places = form["places"];
+            string counterParties = form["counterParties"];
+            string products = form["products"];
+            var file = form.Files[0];
+            var fileName = Path.GetFileName(file.FileName);
 
-			var document = new Document(
-				id,
-				name,
-				fileName
-			);
+            var document = new Document(
+                id,
+                name,
+				fileName,
+                places.Split(", "),
+                counterParties.Split(", "),
+                products.Split(", ")
+            );
 
-			await _service.UploadAsync(file);
-			await _dbService.UploadDocument(document);
+            await _service.UploadAsync(file);
+            await _dbService.UploadDocument(document);
 
 			return Ok(id);
-		}
+        }
 	}
 }

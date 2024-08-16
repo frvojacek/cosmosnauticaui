@@ -3,6 +3,9 @@
     public record Document(
         Guid id,
         string name,
-        string file
+        string file,
+        string[] places,
+        string[] counterParties,
+        string[] products
     );
 }

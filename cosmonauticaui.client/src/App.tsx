@@ -1,4 +1,7 @@
 import { useState, useEffect, type FormEvent } from "react";
+
+import './App.css';
+
 function App() {
     const [documents, setDocument] = useState<string[]>([]);
 
@@ -37,15 +40,27 @@ function App() {
 
     return (
         <>
-            <form onSubmit={handleSubmit}>
-                <label htmlFor="name"></label>
-                <input id="name" name="name" />
-                <label htmlFor="file">File</label>
-                <input id="file" name="file" type="file" />
-                <input id="name" name="name" placeholder="Name" type="text" />
-                <input id="places" name="places" placeholder="Places" type="text" />
-                <input id="counterParties" name="counterParties" placeholder="Counter Parties" type="text" />
-                <input id="products" name="products" placeholder="Products" type="text" />
+            <form id="document-create" onSubmit={handleSubmit}>
+                <div>
+                    <label htmlFor="Name">Name</label>
+                    <input id="name" name="name" />
+                </div>
+                <div>
+                    <label htmlFor="file">File</label>
+                    <input id="file" name="file" type="file" />
+                </div>
+                <div>
+                    <label htmlFor="places">Places</label>
+                    <input id="places" name="places" />
+                </div>
+                <div>
+                    <label htmlFor="counterParties">Counter Parties</label>
+                    <input id="counterParties" name="counterParties" />
+                </div>
+                <div>
+                    <label htmlFor="products">Products</label>
+                    <input id="products" name="products" />
+                </div>
                 <button>Submit</button>
             </form>
             <table>

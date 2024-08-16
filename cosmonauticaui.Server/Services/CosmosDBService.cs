@@ -22,8 +22,7 @@ namespace cosmonauticaui.Server.Services
 
         public async Task<ItemResponse<Document>> UploadDocument(Document document)
         {
-            var item = await _containerClient.CreateItemAsync((document));
-            Console.WriteLine(JsonSerializer.Serialize(document));
+            var item = await _containerClient.CreateItemAsync(document);
             return item;
         }
 

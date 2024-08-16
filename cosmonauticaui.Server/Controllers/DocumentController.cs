@@ -34,14 +34,23 @@ namespace cosmonauticaui.Server.Controllers
 		}
 
 		[HttpPost]
-		[Consumes("multipart/form-data")]
-		public async Task<IActionResult> Post(string name, IFormFile file)
+		public async Task<IActionResult> Post(IFormCollection form)
 		{
-			var document = new Document(Guid.NewGuid(), name, file.FileName);
+			var id = Guid.NewGuid();
+			var name = form["name"];
+			var file = form.Files[0];
+			var fileName = Path.GetFileName(file.FileName);
+
+			var document = new Document(
+				id,
+				name,
+				fileName
+			);
+
 			await _service.UploadAsync(file);
 			await _dbService.UploadDocument(document);
 
-			return Ok();
+			return Ok(id);
 		}
 	}
 }

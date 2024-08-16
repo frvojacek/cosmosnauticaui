@@ -2,7 +2,6 @@
 using cosmonauticaui.Server.Services;
 using Microsoft.AspNetCore.Mvc;
 
-
 namespace cosmonauticaui.Server.Controllers
 {
 	[Route("api/[controller]")]
@@ -36,10 +35,11 @@ namespace cosmonauticaui.Server.Controllers
 
 		[HttpPost]
 		[Consumes("multipart/form-data")]
-		public async Task<IActionResult> Post(IFormFile file)
+		public async Task<IActionResult> Post(string name, IFormFile file)
 		{
+			var document = new Document(Guid.NewGuid(), name, file.FileName);
 			await _service.UploadAsync(file);
-			await _dbService.UploadDocument(new Document("123", "SteveJobs.png"));
+			await _dbService.UploadDocument(document);
 
 			return Ok();
 		}

@@ -1,31 +1,39 @@
 ﻿using Azure.Identity;
-using Azure.Storage.Blobs;
 using Microsoft.Azure.Cosmos;
-using cosmonauticaui.Server.Models;
-using System.Text.Json;
 
 namespace cosmonauticaui.Server.Services
 {
     public class CosmosDBService
     {
-
-        string _storageAccount = "cosmosnauticadb";
-        CosmosClient _serviceClient;
-        Container _containerClient;
+        string _accountName = "cosmosnauticadb";
+        CosmosClient _client;
 
         public CosmosDBService()
         {
-            string uri = $"https://{_storageAccount}.documents.azure.com:443";
-            _serviceClient = new(uri, new DefaultAzureCredential());
-            _containerClient = _serviceClient.GetContainer("Documents", "Items");
+			_client = GetClient(_accountName);
         }
 
-        public async Task<ItemResponse<Document>> UploadDocument(Document document)
+		CosmosClient GetClient(string accountName)
+		{
+			CosmosClient client = new(
+				$"https://{accountName}.documents.azure.com:443",
+				new DefaultAzureCredential());
+
+			return client;
+		}
+
+		public Container GetContainer(string databaseId, string containerId)
+		{
+			Container container = _client.GetContainer(databaseId, containerId);
+			return container;
+		}
+
+		public async Task<ItemResponse<dynamic>> UploadDocument(
+			Container container,
+			dynamic document)
         {
-            var item = await _containerClient.CreateItemAsync(document);
+            var item = await container.CreateItemAsync(document);
             return item;
         }
-
-
     }
 }

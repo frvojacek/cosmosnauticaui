@@ -1,7 +1,8 @@
-﻿using cosmonauticaui.Server.Models;
+﻿using Microsoft.AspNetCore.Mvc;
+using Azure.Storage.Blobs;
+using Microsoft.Azure.Cosmos;
+using cosmonauticaui.Server.Models;
 using cosmonauticaui.Server.Services;
-using Microsoft.AspNetCore.Mvc;
-using System.Numerics;
 
 namespace cosmonauticaui.Server.Controllers
 {
@@ -9,19 +10,24 @@ namespace cosmonauticaui.Server.Controllers
 	[ApiController]
 	public class DocumentController : ControllerBase
 	{
-		AzureBlobService _service;
-		CosmosDBService _dbService;
+		AzureBlobService _blobService;
+		BlobContainerClient _blobContainerClient;
+		CosmosDBService _cosmosService;
+		Container _cosmosContainer;
 
-		public DocumentController(AzureBlobService service, CosmosDBService dbService)
+		public DocumentController(AzureBlobService blobService, CosmosDBService cosmosService)
 		{
-			_service = service;
-			_dbService = dbService;
+			_blobService = blobService;
+			_blobContainerClient = _blobService.GetContainerClient("documents");
+
+			_cosmosService = cosmosService;
+			_cosmosContainer = _cosmosService.GetContainer("Documents", "Items");
 		}
 
 		[HttpGet]
 		public async Task<IActionResult> Get()
 		{
-			var files = await _service.GetAll();
+			var files = await _blobService.GetAll(_blobContainerClient);
 			var fileNames = files.Select(f => f.Name).ToList();
 			return Ok(fileNames);
 		}
@@ -29,7 +35,7 @@ namespace cosmonauticaui.Server.Controllers
 		[HttpGet("{fileName}")]
 		public async Task<IActionResult> Get(string fileName)
 		{
-			var file = await _service.DownloadAsync(fileName);
+			var file = await _blobService.Download(_blobContainerClient, fileName);
 			var byteArray = file.Value.Content.ToArray();
 			return File(byteArray, "application/octet-stream", fileName);
 		}
@@ -37,27 +43,27 @@ namespace cosmonauticaui.Server.Controllers
 		[HttpPost]
 		public async Task<IActionResult> Post(IFormCollection form)
 		{
-            var id = Guid.NewGuid();
-            var name = form["name"];
+			var id = Guid.NewGuid();
+			var name = form["name"];
 			string places = form["places"];
-            string counterParties = form["counterParties"];
-            string products = form["products"];
-            var file = form.Files[0];
-            var fileName = Path.GetFileName(file.FileName);
+			string counterParties = form["counterParties"];
+			string products = form["products"];
+			var file = form.Files[0];
+			var fileName = Path.GetFileName(file.FileName);
 
-            var document = new Document(
-                id,
-                name,
+			var document = new Document(
+				id,
+				name,
 				fileName,
-                places.Split(", "),
-                counterParties.Split(", "),
-                products.Split(", ")
-            );
+				places.Split(", "),
+				counterParties.Split(", "),
+				products.Split(", ")
+			);
 
-            await _service.UploadAsync(file);
-            await _dbService.UploadDocument(document);
+			await _blobService.Upload(_blobContainerClient, file);
+			await _cosmosService.UploadDocument(_cosmosContainer, document);
 
 			return Ok(id);
-        }
+		}
 	}
 }

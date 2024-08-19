@@ -27,9 +27,8 @@ namespace cosmonauticaui.Server.Controllers
 		[HttpGet]
 		public async Task<IActionResult> Get()
 		{
-			var files = await _blobService.GetAll(_blobContainerClient);
-			var fileNames = files.Select(f => f.Name).ToList();
-			return Ok(fileNames);
+            var documents = await _cosmosService.Query<Document>(_cosmosContainer, "SELECT * FROM c");
+			return Ok(documents);
 		}
 
 		[HttpGet("{fileName}")]

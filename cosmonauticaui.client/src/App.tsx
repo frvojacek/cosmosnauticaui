@@ -2,8 +2,17 @@ import { useState, useEffect, type FormEvent } from "react";
 
 import './App.css';
 
+interface Document {
+    id: number
+    name: string
+    file: string
+    places: string[]
+    counterParties: string[]
+    products: string[]
+}
+
 function App() {
-    const [documents, setDocument] = useState<string[]>([]);
+    const [documents, setDocument] = useState<Document[]>([]);
 
     const domain = import.meta.env.PROD ? "" : "https://localhost:7075";
 
@@ -13,7 +22,7 @@ function App() {
 
     async function fetchDocuments() {
         const response = await fetch(domain + "/api/Document")
-        const documents = await response.json()
+        const documents = await response.json() as Document[]
         setDocument(documents)
     }
     
@@ -29,7 +38,10 @@ function App() {
     
     const listDocuments = documents.map((document, index) =>
         <tr key={index}>
-            <td>{document}</td>
+            <td>{document.name}</td>
+            <td>{document.places}</td>
+            <td>{document.counterParties}</td>
+            <td>{document.products}</td>
             <td>
                 <a href={`${domain}/api/Document/${document}`}>
                     <button>Download</button>
@@ -64,6 +76,12 @@ function App() {
                 <button>Submit</button>
             </form>
             <table>
+                <thead>
+                    <td>Document Name</td>
+                    <td>Places</td>
+                    <td>Counter parties</td>
+                    <td>Products</td>
+                </thead>
                 <tbody>
                     {listDocuments}
                 </tbody>

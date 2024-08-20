@@ -25,10 +25,18 @@ namespace cosmonauticaui.Server.Controllers
 		}
 
 		[HttpGet]
-		public async Task<IActionResult> Get()
+		public async Task<IActionResult> Get(string? searchType, string? searchInput)
 		{
-            var documents = await _cosmosService.Query<Document>(_cosmosContainer, "SELECT * FROM c");
-			return Ok(documents);
+			string query = "SELECT * FROM c";
+
+
+            if (searchInput != null && searchType != null)
+			{
+				query += $" WHERE ARRAY_CONTAINS(c.{searchType}, '{searchInput}')";
+            }
+
+            var documents = await _cosmosService.Query<Document>(_cosmosContainer, query);
+            return Ok(documents);
 		}
 
 		[HttpGet("{fileName}")]

@@ -11,6 +11,12 @@ interface Document {
     products: string[]
 }
 
+export enum searchTypes {
+    places,
+    counterParties,
+    products
+}
+
 function App() {
     const [documents, setDocument] = useState<Document[]>([]);
 
@@ -34,6 +40,19 @@ function App() {
             body: new FormData(target)
         });
         fetchDocuments()
+    }
+
+    async function handleSearch(event: FormEvent) {
+        event.preventDefault();
+        const target = event.target as HTMLFormElement;
+        console.debug(target.searchType.value);
+        const response = await fetch(`${domain}/api/Document?` + new URLSearchParams({
+            searchType: target.searchType.value,
+            searchInput: target.searchInput.value
+        }));
+
+        const documents = await response.json() as Document[];
+        setDocument(documents)
     }
     
     const listDocuments = documents.map((document, index) =>
@@ -74,6 +93,15 @@ function App() {
                     <input id="products" name="products" />
                 </div>
                 <button>Submit</button>
+            </form>
+            <form id="document-search" onSubmit={handleSearch}>
+                <select id="searchType" name="searchType">
+                    <option value="places">Place</option>
+                    <option value="counterParties">Counter Party</option>
+                    <option value="products">Product</option>
+                </select>
+                <input id="searchInput" name="searchInput" type="text"></input>
+                <button>Search</button>
             </form>
             <table>
                 <thead>

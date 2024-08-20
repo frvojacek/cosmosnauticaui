@@ -1,5 +1,4 @@
 ﻿using Azure.Identity;
-using cosmonauticaui.Server.Models;
 using Microsoft.Azure.Cosmos;
 
 namespace cosmonauticaui.Server.Services
@@ -49,9 +48,9 @@ namespace cosmonauticaui.Server.Services
 			return list;
 		}
 
-		public async Task<ItemResponse<dynamic>> UploadDocument(
+		public async Task<ItemResponse<T>> UploadDocument<T>(
 			Container container,
-			dynamic document)
+			T document)
         {
             var item = await container.CreateItemAsync(document);
             return item;

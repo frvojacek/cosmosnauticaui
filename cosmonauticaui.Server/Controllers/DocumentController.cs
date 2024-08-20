@@ -50,27 +50,13 @@ namespace cosmonauticaui.Server.Controllers
 		[HttpPost]
 		public async Task<IActionResult> Post(IFormCollection form)
 		{
-			var id = Guid.NewGuid();
-			var name = form["name"];
-			string places = form["places"];
-			string counterParties = form["counterParties"];
-			string products = form["products"];
+			Document document = (FormCollection) form;
 			var file = form.Files[0];
-			var fileName = Path.GetFileName(file.FileName);
-
-			var document = new Document(
-				id,
-				name,
-				fileName,
-				places.Split(", "),
-				counterParties.Split(", "),
-				products.Split(", ")
-			);
 
 			await _blobService.Upload(_blobContainerClient, file);
 			await _cosmosService.UploadDocument(_cosmosContainer, document);
 
-			return Ok(id);
+			return Ok(document.id);
 		}
 	}
 }

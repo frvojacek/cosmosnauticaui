@@ -2,6 +2,7 @@
 using Azure.Identity;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
+using Azure.Storage.Blobs.Specialized;
 
 namespace cosmonauticaui.Server.Services
 {
@@ -41,6 +42,17 @@ namespace cosmonauticaui.Server.Services
 			return items;
 		}
 
+		public async Task<Response<BlobContentInfo>> Upload(
+			BlobContainerClient containerClient,
+			IFormFile file, bool overwrite = false)
+		{
+			BlobClient blobClient = containerClient.GetBlobClient(file.FileName);
+			using (var stream = file.OpenReadStream())
+			{
+				return await blobClient.UploadAsync(stream, overwrite: overwrite);
+			}
+		}
+
 		public async Task<Response<BlobDownloadResult>> Download(
 			BlobContainerClient containerClient,
 			string fileName)
@@ -48,16 +60,6 @@ namespace cosmonauticaui.Server.Services
 			var blobClient = containerClient.GetBlobClient(fileName);
 			var content = await blobClient.DownloadContentAsync();
 			return content;
-		}
-
-		public async Task<Response<BlobContentInfo>> Upload(
-			BlobContainerClient containerClient,
-			IFormFile file)
-		{
-			using (var stream = file.OpenReadStream())
-			{
-				return await containerClient.UploadBlobAsync(file.FileName, stream);
-			}
 		}
 	}
 }

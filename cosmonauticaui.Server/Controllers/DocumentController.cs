@@ -58,5 +58,16 @@ namespace cosmonauticaui.Server.Controllers
 
 			return Ok(document.id);
 		}
+
+		[HttpPut]
+		public async Task<IActionResult> Put(IFormCollection form)
+		{
+			Document document = (FormCollection) form;
+			var file = form.Files[0];
+
+			await _blobService.Upload(_blobContainerClient, file, true);
+
+			return Ok();
+		}
 	}
 }

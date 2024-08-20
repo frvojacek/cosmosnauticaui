@@ -7,7 +7,9 @@ var localhostOrigin = "_localhostOrigin";
 builder.Services.AddCors(options =>
 {
 	options.AddPolicy(name: localhostOrigin,
-		policy => policy.WithOrigins("https://localhost:5173")
+		policy => policy
+			.WithOrigins("https://localhost:5173")
+			.WithMethods("PUT")
 	);
 });
 // Add services to the container.c

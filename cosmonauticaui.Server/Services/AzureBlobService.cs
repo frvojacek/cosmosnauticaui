@@ -30,18 +30,18 @@ namespace cosmonauticaui.Server.Services
 			return client;
 		}
 
-		public async Task<List<BlobItem>> GetAll(BlobContainerClient containerClient)
+		public async Task<List<BlobItem>> GetBlobs(BlobContainerClient containerClient)
 		{
-			var items = new List<BlobItem>();
+			var itemList = new List<BlobItem>();
 			var blobs = containerClient.GetBlobsAsync();
 			await foreach (var blob in blobs)
 			{
-				items.Add(blob);
+				itemList.Add(blob);
 			}
-			return items;
+			return itemList;
 		}
 
-		public async Task<Response<BlobContentInfo>> Upload(
+		public async Task<Response<BlobContentInfo>> UploadBlob(
 			BlobContainerClient containerClient,
 			IFormFile file, bool overwrite = false)
 		{
@@ -52,13 +52,13 @@ namespace cosmonauticaui.Server.Services
 			}
 		}
 
-		public async Task<Response<BlobDownloadResult>> Download(
+		public async Task<Response<BlobDownloadResult>> DownloadBlob(
 			BlobContainerClient containerClient,
 			string fileName)
 		{
 			var blobClient = containerClient.GetBlobClient(fileName);
-			var content = await blobClient.DownloadContentAsync();
-			return content;
+			var result = await blobClient.DownloadContentAsync();
+			return result;
 		}
 	}
 }

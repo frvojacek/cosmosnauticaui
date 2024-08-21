@@ -27,13 +27,13 @@ namespace cosmonauticaui.Server.Services
 			return container;
 		}
 
-		public async Task<List<T>> Query<T>(Container container, string query)
+		public async Task<List<T>> QueryItems<T>(Container container, string query)
 		{
 			using FeedIterator<T> feed = container.GetItemQueryIterator<T>(
 				queryText: query
 			);
 
-			var list = new List<T>();
+			var itemList = new List<T>();
 
 			while (feed.HasMoreResults)
 			{
@@ -41,19 +41,16 @@ namespace cosmonauticaui.Server.Services
 
 				foreach (T item in response)
 				{
-					list.Add(item);
+					itemList.Add(item);
 				}
 			}
 
-			return list;
+			return itemList;
 		}
 
-		public async Task<ItemResponse<T>> UploadDocument<T>(
-			Container container,
-			T document)
+		public async Task<ItemResponse<T>> CreateItem<T>(Container container, T item)
         {
-            var item = await container.CreateItemAsync(document);
-            return item;
+            return await container.CreateItemAsync(item);
         }
     }
 }

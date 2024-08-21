@@ -34,14 +34,14 @@ namespace cosmonauticaui.Server.Controllers
 				query += $" WHERE ARRAY_CONTAINS(c.{searchType}, '{searchInput}')";
 			}
 
-			var documents = await _cosmosService.Query<Document>(_cosmosContainer, query);
+			var documents = await _cosmosService.QueryItems<Document>(_cosmosContainer, query);
 			return Ok(documents);
 		}
 
 		[HttpGet("{fileName}")]
 		public async Task<IActionResult> Get(string fileName)
 		{
-			var file = await _blobService.Download(_blobContainerClient, fileName);
+			var file = await _blobService.DownloadBlob(_blobContainerClient, fileName);
 			var byteArray = file.Value.Content.ToArray();
 			return File(byteArray, "application/octet-stream", fileName);
 		}
@@ -50,12 +50,12 @@ namespace cosmonauticaui.Server.Controllers
 		public async Task<IActionResult> Post(IFormCollection form)
 		{
 			var file = form.Files[0];
-			var uploadResponse = await _blobService.Upload(_blobContainerClient, file);
+			var uploadResponse = await _blobService.UploadBlob(_blobContainerClient, file);
 
 			Document document = (FormCollection)form;
 			document.Version = uploadResponse.Value.VersionId;
 
-			await _cosmosService.UploadDocument(_cosmosContainer, document);
+			await _cosmosService.CreateItem(_cosmosContainer, document);
 
 			return Ok(document.id);
 		}
@@ -64,12 +64,12 @@ namespace cosmonauticaui.Server.Controllers
 		public async Task<IActionResult> Put(IFormCollection form)
 		{
 			var file = form.Files[0];
-			var uploadResponse = await _blobService.Upload(_blobContainerClient, file, true);
+			var uploadResponse = await _blobService.UploadBlob(_blobContainerClient, file, true);
 
 			Document document = (FormCollection)form;
 			document.Version = uploadResponse.Value.VersionId;
 
-			await _cosmosService.UploadDocument(_cosmosContainer, document);
+			await _cosmosService.CreateItem(_cosmosContainer, document);
 
 			return Ok(document.id);
 		}

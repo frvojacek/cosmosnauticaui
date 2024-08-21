@@ -1,17 +1,29 @@
 ﻿namespace cosmonauticaui.Server.Models
 {
-    public record Document(
-        Guid id,
-        string name,
-        string file,
-        string[] places,
-        string[] counterParties,
-        string[] products
-    )
-    {
-        public static implicit operator Document(FormCollection formCollection)
+    public class Document
+	{
+        public Guid id { get; set; }
+        public string Name { get; set; }
+        public string File { get; set; }
+        public string Version { get; set; }
+        public string[] Places { get; set; }
+        public string[] CounterParties { get; set; }
+        public string[] Products { get; set; }
+
+        public Document(string name, string file, string version, string[] places, string[] counterParties, string[] products)
+        {
+            id = Guid.NewGuid();
+            Name = name;
+            File = file;
+            Version = version;
+            Places = places;
+            CounterParties = counterParties;
+            Products = products;
+        }
+
+		public static implicit operator Document(FormCollection formCollection)
 		{
-            var id = Guid.NewGuid();
+            var version = formCollection["version"];
             var name = formCollection["name"];
 			var file = formCollection.Files[0];
             var fileName = Path.GetFileName(file.FileName);
@@ -20,10 +32,10 @@
             string products = formCollection["products"];
 
 			return new Document(
-                id,
                 name,
 				fileName,
-                places.Split(" "),
+				version,
+				places.Split(" "),
                 counterParties.Split(" "),
 				products.Split(" ")
 			);

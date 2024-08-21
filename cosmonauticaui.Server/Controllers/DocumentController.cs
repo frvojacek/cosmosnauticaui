@@ -29,14 +29,13 @@ namespace cosmonauticaui.Server.Controllers
 		{
 			string query = "SELECT * FROM c";
 
-
-            if (searchInput != null && searchType != null)
+			if (searchInput != null && searchType != null)
 			{
 				query += $" WHERE ARRAY_CONTAINS(c.{searchType}, '{searchInput}')";
-            }
+			}
 
-            var documents = await _cosmosService.Query<Document>(_cosmosContainer, query);
-            return Ok(documents);
+			var documents = await _cosmosService.Query<Document>(_cosmosContainer, query);
+			return Ok(documents);
 		}
 
 		[HttpGet("{fileName}")]
@@ -50,10 +49,12 @@ namespace cosmonauticaui.Server.Controllers
 		[HttpPost]
 		public async Task<IActionResult> Post(IFormCollection form)
 		{
-			Document document = (FormCollection) form;
 			var file = form.Files[0];
+			var uploadResponse = await _blobService.Upload(_blobContainerClient, file);
 
-			await _blobService.Upload(_blobContainerClient, file);
+			Document document = (FormCollection)form;
+			document.Version = uploadResponse.Value.VersionId;
+
 			await _cosmosService.UploadDocument(_cosmosContainer, document);
 
 			return Ok(document.id);
@@ -62,12 +63,15 @@ namespace cosmonauticaui.Server.Controllers
 		[HttpPut]
 		public async Task<IActionResult> Put(IFormCollection form)
 		{
-			Document document = (FormCollection) form;
 			var file = form.Files[0];
+			var uploadResponse = await _blobService.Upload(_blobContainerClient, file, true);
 
-			await _blobService.Upload(_blobContainerClient, file, true);
+			Document document = (FormCollection)form;
+			document.Version = uploadResponse.Value.VersionId;
 
-			return Ok();
+			await _cosmosService.UploadDocument(_cosmosContainer, document);
+
+			return Ok(document.id);
 		}
 	}
 }

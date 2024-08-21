@@ -2,20 +2,18 @@
 {
     public class Document
 	{
-        public Guid id { get; set; }
+        public string id { get; set; }
         public string Name { get; set; }
-        public string File { get; set; }
-        public string Version { get; set; }
-        public string[] Places { get; set; }
+		public List<DocumentVersion> Versions { get; set; }
+		public string[] Places { get; set; }
         public string[] CounterParties { get; set; }
         public string[] Products { get; set; }
 
-        public Document(string name, string file, string version, string[] places, string[] counterParties, string[] products)
+        public Document(string name, string[] places, string[] counterParties, string[] products)
         {
-            id = Guid.NewGuid();
+            id = Guid.NewGuid().ToString();
             Name = name;
-            File = file;
-            Version = version;
+            Versions = new List<DocumentVersion>();
             Places = places;
             CounterParties = counterParties;
             Products = products;
@@ -25,20 +23,24 @@
 		{
             var version = formCollection["version"];
             var name = formCollection["name"];
-			var file = formCollection.Files[0];
-            var fileName = Path.GetFileName(file.FileName);
             string places = formCollection["places"];
             string counterParties = formCollection["counterParties"];
             string products = formCollection["products"];
 
 			return new Document(
                 name,
-				fileName,
-				version,
 				places.Split(" "),
                 counterParties.Split(" "),
 				products.Split(" ")
 			);
         }
     }
+
+    public record DocumentVersion(
+        string id,
+		string fileId,
+		string fileName,
+        string validFrom,
+        string validTo
+    );
 }

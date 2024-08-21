@@ -27,11 +27,11 @@ namespace cosmonauticaui.Server.Controllers
 		[HttpGet]
 		public async Task<IActionResult> Get(string? searchType, string? searchInput)
 		{
-			string query = "SELECT * FROM c";
+			var query = "SELECT * FROM d";
 
 			if (searchInput != null && searchType != null)
 			{
-				query += $" WHERE ARRAY_CONTAINS(c.{searchType}, '{searchInput}')";
+				query += $" WHERE ARRAY_CONTAINS(d.{searchType}, '{searchInput}')";
 			}
 
 			var documents = await _cosmosService.QueryItems<Document>(_cosmosContainer, query);
@@ -49,11 +49,26 @@ namespace cosmonauticaui.Server.Controllers
 		[HttpPost]
 		public async Task<IActionResult> Post(IFormCollection form)
 		{
-			var file = form.Files[0];
-			var uploadResponse = await _blobService.UploadBlob(_blobContainerClient, file);
-
 			Document document = (FormCollection)form;
-			document.Version = uploadResponse.Value.VersionId;
+
+			var versionId = Guid.NewGuid().ToString();
+			var fileId = Guid.NewGuid().ToString();
+			var file = form.Files[0];
+			var fileName = Path.GetFileName(file.FileName);
+			var validFrom = form["validFrom"];
+			var validTo = form["validTo"];
+
+			await _blobService.UploadBlob(_blobContainerClient, file, fileId);
+
+			var version = new DocumentVersion(
+				versionId,
+				fileId,
+				fileName,
+				validFrom,
+				validTo
+			);
+
+			document.Versions.Add(version);
 
 			await _cosmosService.CreateItem(_cosmosContainer, document);
 
@@ -63,13 +78,36 @@ namespace cosmonauticaui.Server.Controllers
 		[HttpPut]
 		public async Task<IActionResult> Put(IFormCollection form)
 		{
-			var file = form.Files[0];
-			var uploadResponse = await _blobService.UploadBlob(_blobContainerClient, file, true);
-
 			Document document = (FormCollection)form;
-			document.Version = uploadResponse.Value.VersionId;
+			document.id = form["id"];
 
-			await _cosmosService.CreateItem(_cosmosContainer, document);
+			var query = $"SELECT * FROM d WHERE d.id = \"{document.id}\"";
+			var cosmosDocuments = await _cosmosService.QueryItems<Document>(_cosmosContainer, query);
+			document.Versions = cosmosDocuments[0].Versions;
+
+			if (form.Files.Count > 0)
+			{
+				var versionId = Guid.NewGuid().ToString();
+				var file = form.Files[0];
+				var fileId = Guid.NewGuid().ToString();
+				var fileName = Path.GetFileName(file.FileName);
+				var validFrom = form["validFrom"];
+				var validTo = form["validTo"];
+
+				await _blobService.UploadBlob(_blobContainerClient, file, fileId, true);
+
+				var version = new DocumentVersion(
+					versionId,
+					fileId,
+					fileName,
+					validFrom,
+					validTo
+				);
+
+				document.Versions.Add(version);
+			}
+
+			await _cosmosService.ReplaceItem(_cosmosContainer, document, document.id);
 
 			return Ok(document.id);
 		}

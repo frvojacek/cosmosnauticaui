@@ -43,9 +43,11 @@ namespace cosmonauticaui.Server.Services
 
 		public async Task<Response<BlobContentInfo>> UploadBlob(
 			BlobContainerClient containerClient,
-			IFormFile file, bool overwrite = false)
+			IFormFile file,
+			string fileName,
+			bool overwrite = false)
 		{
-			BlobClient blobClient = containerClient.GetBlobClient(file.FileName);
+			BlobClient blobClient = containerClient.GetBlobClient(fileName);
 			using (var stream = file.OpenReadStream())
 			{
 				return await blobClient.UploadAsync(stream, overwrite: overwrite);

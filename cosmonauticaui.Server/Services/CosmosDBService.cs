@@ -52,5 +52,10 @@ namespace cosmonauticaui.Server.Services
         {
             return await container.CreateItemAsync(item);
         }
+
+		public async Task<ItemResponse<T>> ReplaceItem<T>(Container container, T item, string id)
+		{
+			return await container.ReplaceItemAsync(item, id);
+		}
     }
 }

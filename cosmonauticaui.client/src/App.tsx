@@ -42,7 +42,11 @@ function App() {
         const formData = new FormData(target);
 
         if (selectedDocument) {
-            // Update existing document
+            const file = formData.get('file') as File | null;
+
+            if (file && file.size <= 0) {
+                formData.delete("file");
+            }
             await fetch(`${domain}/api/Document/${selectedDocument.id}`, {
                 method: "PUT",
                 body: formData
@@ -132,7 +136,7 @@ function App() {
                             </div>
                             <div className="fileInput">
                                 <label htmlFor="file">File</label>
-                                <input id="file" name="file" type="file" />
+                                <input id="file" name="file" type="file" required={!selectedDocument} />
                             </div>
                             <button type="submit">{selectedDocument ? "Update" : "Submit"}</button>
                         </form>

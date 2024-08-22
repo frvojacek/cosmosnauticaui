@@ -245,10 +245,13 @@ header {
     z-index: 5;
 }
 
-header > h1{
-    color: whitesmoke;
-    font-size: 1.4rem
-}
+    header > h1 {
+        color: whitesmoke;
+        font-size: 1.4rem;
+        font-family: "Figtree", sans-serif;
+        font-weight: 600;
+        letter-spacing: 1px;
+    }
 
 .logo{
     height: 60%;
@@ -285,4 +288,8 @@ main {
     gap: 10px;
     box-sizing: border-box;
     align-items: center;
+}
+
+@media and screen (){
+
 }

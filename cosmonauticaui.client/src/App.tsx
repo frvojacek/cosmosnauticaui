@@ -76,6 +76,12 @@ function App() {
         setDocument(documents)
     }
 
+    async function handleDelete(id: number) {
+        await fetch(`${domain}/api/Document/${id}`, {
+            method: "DELETE"
+        });
+        fetchDocuments();
+    }
     function handleEditDocument(document: Document) {
         setSelectedDocument(document);
         createDialog.current?.show();
@@ -92,7 +98,7 @@ function App() {
                     <button><img src="/src/SVGs/download_icon.svg" alt="Download" /></button>
                 </a>
                 <button onClick={() => handleEditDocument(document)}><img src="/src/SVGs/edit_icon.svg" alt="Edit" /></button>
-                <button><img src="/src/SVGs/delete_icon.svg" alt="Delete" /></button>
+                <button onClick={() => handleDelete(document.id)}><img src="/src/SVGs/delete_icon.svg" alt="Delete" /></button>
             </td>
         </tr>
     ));

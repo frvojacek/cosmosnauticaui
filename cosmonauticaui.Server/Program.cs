@@ -10,6 +10,7 @@ builder.Services.AddCors(options =>
 		policy => policy
 			.WithOrigins("https://localhost:5173")
 			.WithMethods("PUT")
+			.WithMethods("DELETE")
 	);
 });
 // Add services to the container.c

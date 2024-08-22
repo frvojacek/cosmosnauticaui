@@ -29,9 +29,9 @@
 
 			return new Document(
                 name,
-				places.Split(" "),
-                counterParties.Split(" "),
-				products.Split(" ")
+				places.Split(", "),
+                counterParties.Split(", "),
+				products.Split(", ")
 			);
         }
     }

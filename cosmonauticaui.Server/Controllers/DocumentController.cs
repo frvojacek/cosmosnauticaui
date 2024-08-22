@@ -38,12 +38,15 @@ namespace cosmonauticaui.Server.Controllers
 			return Ok(documents);
 		}
 
-		[HttpGet("{fileName}")]
-		public async Task<IActionResult> Get(string fileName)
+		[HttpGet("{id}")]
+		public async Task<IActionResult> Get(string id)
 		{
-			var file = await _blobService.DownloadBlob(_blobContainerClient, fileName);
+			var query = $"SELECT * FROM d WHERE d.id = \"{id}\"";
+			var cosmosDocuments = await _cosmosService.QueryItems<Document>(_cosmosContainer, query);
+			var document = cosmosDocuments[0];
+			var file = await _blobService.DownloadBlob(_blobContainerClient, document.Versions[0].fileId);
 			var byteArray = file.Value.Content.ToArray();
-			return File(byteArray, "application/octet-stream", fileName);
+			return File(byteArray, "application/octet-stream", document.Versions[0].fileName);
 		}
 
 		[HttpPost]
@@ -75,11 +78,11 @@ namespace cosmonauticaui.Server.Controllers
 			return Ok(document.id);
 		}
 
-		[HttpPut]
-		public async Task<IActionResult> Put(IFormCollection form)
+		[HttpPut("{id}")]
+		public async Task<IActionResult> Put(string id, IFormCollection form)
 		{
 			Document document = (FormCollection)form;
-			document.id = form["id"];
+			document.id = id;
 
 			var query = $"SELECT * FROM d WHERE d.id = \"{document.id}\"";
 			var cosmosDocuments = await _cosmosService.QueryItems<Document>(_cosmosContainer, query);

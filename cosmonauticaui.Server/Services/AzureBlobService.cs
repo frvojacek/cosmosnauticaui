@@ -59,8 +59,15 @@ namespace cosmonauticaui.Server.Services
 			string fileName)
 		{
 			var blobClient = containerClient.GetBlobClient(fileName);
-			var result = await blobClient.DownloadContentAsync();
-			return result;
+			return await blobClient.DownloadContentAsync();
+		}
+
+		public async Task<Response> DeleteBlob(
+			BlobContainerClient containerClient,
+			string fileName)
+		{
+			var blobClient = containerClient.GetBlobClient(fileName);
+			return await blobClient.DeleteAsync();
 		}
 	}
 }

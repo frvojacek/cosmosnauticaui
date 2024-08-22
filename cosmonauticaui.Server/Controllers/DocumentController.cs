@@ -41,7 +41,7 @@ namespace cosmonauticaui.Server.Controllers
 		[HttpGet("{id}")]
 		public async Task<IActionResult> Get(string id)
 		{
-			var query = $"SELECT * FROM d WHERE d.id = \"{id}\"";
+			var query = $"SELECT * FROM d WHERE d.id = '{id}'";
 			var cosmosDocuments = await _cosmosService.QueryItems<Document>(_cosmosContainer, query);
 			var document = cosmosDocuments[0];
 			var file = await _blobService.DownloadBlob(_blobContainerClient, document.Versions[0].fileId);
@@ -84,7 +84,7 @@ namespace cosmonauticaui.Server.Controllers
 			Document document = (FormCollection)form;
 			document.id = id;
 
-			var query = $"SELECT * FROM d WHERE d.id = \"{document.id}\"";
+			var query = $"SELECT * FROM d WHERE d.id = '{document.id}'";
 			var cosmosDocuments = await _cosmosService.QueryItems<Document>(_cosmosContainer, query);
 			document.Versions = cosmosDocuments[0].Versions;
 
@@ -113,6 +113,21 @@ namespace cosmonauticaui.Server.Controllers
 			await _cosmosService.ReplaceItem(_cosmosContainer, document, document.id);
 
 			return Ok(document.id);
+		}
+
+		[HttpDelete("{id}")]
+		public async Task<IActionResult> Delete(string id)
+		{
+			var query = $"SELECT * FROM d WHERE d.id = '{id}'";
+			var cosmosDocuments = await _cosmosService.QueryItems<Document>(_cosmosContainer, query);
+			var document = cosmosDocuments[0];
+
+            foreach (var version in document.Versions)
+			{
+				await _blobService.DeleteBlob(_blobContainerClient, version.fileId);
+			}
+			await _cosmosService.DeleteItem<Document>(_cosmosContainer, id);
+			return Ok();
 		}
 	}
 }

@@ -57,5 +57,10 @@ namespace cosmonauticaui.Server.Services
 		{
 			return await container.ReplaceItemAsync(item, id);
 		}
+
+		public async Task<ItemResponse<T>> DeleteItem<T>(Container container, string id)
+		{
+			return await container.DeleteItemAsync<T>(id, new PartitionKey(id));
+		}
     }
 }

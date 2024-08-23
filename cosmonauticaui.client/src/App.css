@@ -228,7 +228,7 @@ td::-webkit-scrollbar-thumb {
     background-color: gainsboro;
 }
 
-.td_icons button > img{
+.td_icons button > svg{
     width: 15px;
 }
 
